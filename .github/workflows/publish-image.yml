@@ -1,0 +1,40 @@
+name: Build and publish ready-to-write image
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag, for example v1.0.0
+        required: true
+        default: v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build image from the verified official base
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes curl e2fsprogs xz-utils util-linux parted
+          bash image/build-ready-image.sh
+
+      - name: Publish image and checksum as a GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.-]+)?$ ]] || {
+            echo 'Tag non valido; usa per esempio v1.0.0.' >&2
+            exit 1
+          }
+          gh release create "$RELEASE_TAG" \
+            dist/rpzc-trixie-armhf.img.xz \
+            dist/SHA256SUMS \
+            --title "Raspberry Pi Zero Checker $RELEASE_TAG" \
+            --notes "Immagine Raspberry Pi OS Trixie armhf con rapporto RPZC automatico. Per installare, verificare il download e leggere il rapporto, segui docs/CONTROLLO_COMPLETO.md. Il test non certifica l’autenticità fisica della scheda."

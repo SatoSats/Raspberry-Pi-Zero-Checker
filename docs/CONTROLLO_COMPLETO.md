@@ -1,64 +1,77 @@
 # Controllo completo del Raspberry Pi Zero V1.3
 
-Questa procedura combina l’ispezione fotografica della scheda con il rapporto automatico prodotto sulla microSD. È scritta per chi non ha esperienza di elettronica.
+Questa procedura usa un’immagine già pronta: la scarichi da GitHub, la scrivi sulla microSD, avvii il Raspberry e leggi il rapporto dal computer. La guida illustrata inclusa nel repository contiene le fotografie originali per confrontare la scheda.
 
-## Prima di iniziare
+## Occorrente
 
-Occorrono il Raspberry Pi Zero da controllare, una microSD, un computer Linux con Raspberry Pi Imager e un cavo micro-USB. La procedura del rapporto non richiede monitor, tastiera, Wi-Fi, SSH o una connessione di rete USB.
+- Raspberry Pi Zero da controllare e una microSD da almeno 8 GB.
+- Computer con Raspberry Pi Imager e lettore microSD.
+- Alimentatore micro-USB per la porta `PWR IN`.
 
-La scheda e i dati mostrati dal suo sistema possono essere contraffatti. Il risultato indica ciò che il software rileva; non è una certificazione di autenticità.
+Non servono monitor, tastiera, Wi-Fi, SSH o collegamento USB dati al computer.
 
-## 1. Ispezione visiva con le fotografie
+## 1. Confronta la scheda con le fotografie
 
-Apri la [guida visiva illustrata](guida-italiana.pdf) e confronta la scheda reale con le fotografie del lato componenti e del lato posteriore. Non modificare o rimuovere componenti durante il controllo.
+Apri la [guida visiva illustrata](guida-italiana.pdf). Segui l’orientamento indicato e confronta sia il lato componenti sia il retro con le fotografie originali. Controlla connettori, scritte, fori GPIO e disposizione dei componenti come descritto nelle pagine 2, 3 e 5.
 
-Segui l’orientamento mostrato nella guida: GPIO in alto, porte sul bordo inferiore, lettore microSD a sinistra e connettore CAMERA sul bordo destro. Controlla la presenza, la posizione e l’integrità dei connettori e dei componenti indicati nelle pagine 2 e 3. Sul retro confronta logo, serigrafie, piazzole di test e area J5 con la fotografia. Verifica la checklist visiva a pagina 5.
+Sul modello senza suffisso H, i 40 fori GPIO possono essere vuoti: è normale. Colore del circuito, colore dei connettori e singole marcature dei componenti possono cambiare tra lotti. La foto aiuta a notare anomalie, ma scritte e logo possono essere copiati e il confronto visivo non certifica l’autenticità.
 
-Il Raspberry Pi Zero V1.3 senza suffisso H può avere i 40 fori GPIO non popolati con pin metallici: è normale. Non decidere in base al colore del circuito o dei connettori, né a una singola marcatura del package; alcuni componenti e codici variano tra lotti. Non scartare una scheda soltanto perché un particolare colore differisce dalla fotografia.
+## 2. Scarica l’immagine già pronta da GitHub
 
-La foto è un riferimento per notare incongruenze, parti mancanti, fili aggiunti o saldature sospette. Logo, scritte e disposizione possono essere copiati: la somiglianza visiva non prova l’autenticità.
+1. Apri la pagina [Releases di Raspberry Pi Zero Checker](https://github.com/SatoSats/Raspberry-Pi-Zero-Checker/releases/latest).
+2. Scarica questi due file della versione più recente:
+   - `rpzc-trixie-armhf.img.xz` — immagine da scrivere sulla microSD;
+   - `SHA256SUMS` — impronta per controllare che il download sia completo.
+3. Metti entrambi i file nella stessa cartella del computer.
+4. Su Linux apri il Terminale in quella cartella ed esegui:
 
-## 2. Preparare la microSD con il rapporto automatico
+   ```bash
+   sha256sum -c SHA256SUMS
+   ```
 
-Dal terminale del computer, entra nella cartella del repository e avvia:
+   Prosegui solo se compare `OK` per `rpzc-trixie-armhf.img.xz`. Se il controllo fallisce, scarica di nuovo entrambi i file.
 
-```bash
-bash image/prepare-selftest-card.sh
-```
+L’immagine contiene Raspberry Pi OS Trixie 32 bit e il servizio che crea il rapporto a ogni avvio. Non contiene password personali. SSH non viene abilitato.
 
-Lo script scarica la base ufficiale Raspberry Pi OS Lite Trixie a 32 bit (`armhf`) e ne verifica il checksum. Poi mostra i dischi rilevati. Seleziona il disco intero corrispondente alla microSD, non una sua partizione. Controlla con attenzione nome e dimensione: la scrittura cancella tutti i dati presenti sul disco scelto.
+## 3. Scrivi la microSD
 
-Per proseguire, conferma soltanto dopo aver verificato che il dispositivo selezionato sia davvero la microSD. Se hai dubbi, annulla e chiedi aiuto prima di scrivere.
+1. Inserisci la microSD nel computer.
+2. Apri Raspberry Pi Imager.
+3. Scegli **Use custom / Usa immagine personalizzata** e seleziona `rpzc-trixie-armhf.img.xz`.
+4. Scegli la microSD come destinazione. Controlla nome e capacità del supporto: la scrittura cancellerà tutti i dati presenti sulla microSD selezionata.
+5. Avvia la scrittura e attendi che Raspberry Pi Imager mostri il completamento.
+6. Espelli la microSD in modo sicuro.
 
-Il programma inserisce nella configurazione di avvio il controllo e l’unità systemd. L’unità è abilitata per partire automaticamente. SSH non viene abilitato e non è necessario.
+## 4. Avvia il Pi e fai creare il rapporto
 
-## 3. Avviare il Raspberry e leggere il rapporto
+1. Inserisci la microSD nel Raspberry Pi Zero.
+2. Collega un alimentatore alla porta `PWR IN`, quella più vicina alla porta `USB` dati.
+3. Attendi circa due minuti per il primo avvio e la creazione del file.
+4. Scollega l’alimentazione, poi rimuovi la microSD.
 
-Espelli la microSD in sicurezza dal computer e inseriscila nel Raspberry Pi Zero. Alimenta la scheda. Per questa procedura puoi usare la porta `PWR IN`; non occorre collegare il cavo USB dati al computer.
+Il servizio di sistema è attivato automaticamente. Scrive il rapporto in `/boot/firmware/RPZC-REPORT.txt`; sul computer il file si trova nella partizione FAT chiamata spesso `bootfs`.
 
-Attendi circa due minuti per il primo avvio e la creazione del rapporto. Poi spegni la scheda e reinserisci la microSD nel computer. Apri la partizione di avvio, chiamata di solito `bootfs`, e leggi il file `RPZC-REPORT.txt`.
+## 5. Leggi e interpreta `RPZC-REPORT.txt`
 
-Il rapporto viene scritto in `/boot/firmware/RPZC-REPORT.txt` sul Raspberry; quando la microSD viene rimessa nel computer, il file si trova nella partizione FAT di avvio.
+Rimetti la microSD nel computer, apri `bootfs` e fai doppio clic su `RPZC-REPORT.txt` (oppure aprilo con un editor di testo).
 
-## 4. Interpretare il risultato di riconoscimento
-
-Il profilo previsto dal test è:
+Il profilo atteso è:
 
 - modello: Raspberry Pi Zero Rev 1.3;
 - revisione: `900093` oppure `920093`;
 - sistema: Raspberry Pi OS Trixie;
 - architettura: `armhf` (32 bit).
 
-Se il rapporto mostra queste informazioni e scrive **Esito test di riconoscimento: SUPERATO**, il test di riconoscimento software è superato. Il valore `900093` è stato osservato nel collaudo reale del 20 novembre 2026; il codice ammesso `920093` identifica la stessa revisione V1.3.
+Se questi dati corrispondono e compare **Esito test di riconoscimento: SUPERATO**, il riconoscimento software è superato. `900093` è la revisione rilevata nella prova già effettuata; `920093` è l’altra revisione V1.3 ammessa.
 
-Il rapporto precedente al cambiamento dello script mostrava anche SSH non attivo e `usb0` assente e terminava con codice 1. Questo codice rifletteva il vecchio criterio che sommava controlli facoltativi al risultato. Il riconoscimento del modello e del sistema era comunque riuscito. Nella versione aggiornata, SSH è escluso e l’assenza di `usb0` è solo informativa: non impediscono l’esito positivo se modello, revisione e sistema coincidono.
+SSH non fa parte del test. L’assenza dell’interfaccia `usb0` non cambia l’esito. USB Gadget e la rete tra il computer host e il Pi si controllano a parte, solo se ti interessa verificare anche quel collegamento.
 
-Se modello, revisione, codename o architettura non coincidono, il test non risulta superato. Conserva il rapporto completo e ricontrolla le righe prima di trarre conclusioni sulla scheda.
+## 6. Limiti del controllo
 
-## 5. Limiti e verifiche facoltative
+Il programma legge informazioni presentate dal sistema, tra cui modello, revisione, `/proc/device-tree/model` e `/etc/os-release`. La revisione e il device-tree sono dati software falsificabili. Il risultato conferma che il software ha riconosciuto il profilo previsto; non certifica l’autenticità fisica, l’origine o l’integrità elettrica della scheda.
 
-Il rapporto legge informazioni rese disponibili dal sistema, tra cui `/proc/device-tree/model`, la revisione in `/proc/cpuinfo` e `/etc/os-release`. Questi sono dati software falsificabili. Un risultato positivo conferma che il software ha riconosciuto il profilo previsto; non dimostra che la scheda sia originale, che ogni componente sia quello di fabbrica o che l’hardware sia elettricamente integro.
+La guida illustrata descrive anche un percorso USB/SSH facoltativo. Non serve per scrivere l’immagine, generare il rapporto o superare il test di riconoscimento.
 
-SSH non è requisito del test. USB Gadget e la rete tra computer e Raspberry sono controlli separati. L’eventuale presenza di `usb0` riguarda il Raspberry; per verificare che il computer host riceva una rete USB occorre un controllo distinto dal computer. L’assenza di questi elementi non cambia l’esito del test di riconoscimento.
+## Nota per chi mantiene il repository
 
-La guida illustrata descrive anche un percorso facoltativo di collegamento USB e lettura del codice tramite SSH. Seguilo solo se vuoi verificare quel collegamento; non serve per generare o leggere `RPZC-REPORT.txt`.
+Il workflow di pubblicazione genera il file `.img.xz` dalle fonti fissate nel repository. `image/prepare-selftest-card.sh` è un percorso alternativo per preparare direttamente una microSD da Linux; l’utente finale può seguire invece i passaggi di questa guida e scaricare l’immagine dalle Releases.
