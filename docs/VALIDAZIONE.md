@@ -30,10 +30,19 @@ Il workaround riportato nella segnalazione (avvio da PWR IN, collegamento del ca
 - Esito: **test funzionale non superato**. Il sintomo è compatibile con la segnalazione sul Pi Zero V1.3 citata sopra, ma la causa non è stata determinata.
 - Variante con unità systemd per riavviare `g_ether`: sperimentale, non convalidata su Trixie. La successiva osservazione host non ha mostrato un dispositivo Gadget; test inconclusivo.
 
+## Modalità di autodiagnosi
+
+È stato preparato `image/prepare-selftest-card.sh`: scrive la base ufficiale con USB Gadget e un controllo automatico al primo avvio. Il servizio salva il rapporto in `/boot/firmware/RPZC-REPORT.txt`, sulla partizione FAT che Raspberry Pi OS monta in `/boot/firmware/`.
+
+- Verifica statica: script di preparazione valido sintatticamente; checksum della base ufficiale e di Raspberry Pi Imager CLI verificati.
+- Test sul Raspberry Pi Zero V1.3: pendente.
+- Il rapporto locale non certifica l'autenticità e non prova il collegamento DHCP/SSH dal computer host.
+
 ## Stato
 
 - Verifica delle pagine ufficiali aggiornata: 2026-11-20.
 - Base ufficiale scritta e checksum verificato.
 - Percorso USB Gadget/SSH semplice per principianti: **non convalidato**.
+- Percorso di autodiagnosi con rapporto su `bootfs`: **in attesa di test fisico**.
 - Immagine personalizzata pubblica: non preparata e non pubblicata.
 - Non presentare il progetto o l'immagine come pronti all'uso.
