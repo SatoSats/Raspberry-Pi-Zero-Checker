@@ -20,9 +20,20 @@ Prima di dichiarare collaudata o pubblicare un'immagine personalizzata occorre v
 
 Il workaround riportato nella segnalazione (avvio da PWR IN, collegamento del cavo dati, poi rimozione di PWR IN) è solo un tentativo diagnostico e non è validato da questo progetto.
 
+## Esito del test fisico (2026-11-20)
+
+- Hardware provato: Raspberry Pi Zero V1.3, Linux Mint come host, microSD da 14,6 GB.
+- Scrittura della base ufficiale Trixie 32-bit: Imager ha riportato `Write successful`; il checksum dell'archivio corrisponde a quello ufficiale.
+- USB: il computer ha rilevato `Raspberry Pi USB Gadget` (`2e8a:0013`) e il driver `cdc_ether` ha creato un'interfaccia Ethernet.
+- Rete: NetworkManager è rimasto in attesa della configurazione IPv4; nessun lease DHCP. L'assegnazione temporanea di `10.12.194.2/28` al computer non ha ottenuto risposta da `10.12.194.1`.
+- SSH: non raggiunto; `pi-zero-checker` non eseguito.
+- Esito: **test funzionale non superato**. Il sintomo è compatibile con la segnalazione sul Pi Zero V1.3 citata sopra, ma la causa non è stata determinata.
+- Variante con unità systemd per riavviare `g_ether`: sperimentale, non convalidata su Trixie. La successiva osservazione host non ha mostrato un dispositivo Gadget; test inconclusivo.
+
 ## Stato
 
 - Verifica delle pagine ufficiali aggiornata: 2026-11-20.
-- Revisione di PDF e contenuti: completata localmente.
-- Esecuzione degli script su Raspberry Pi Zero V1.3: pendente.
+- Base ufficiale scritta e checksum verificato.
+- Percorso USB Gadget/SSH semplice per principianti: **non convalidato**.
 - Immagine personalizzata pubblica: non preparata e non pubblicata.
+- Non presentare il progetto o l'immagine come pronti all'uso.
