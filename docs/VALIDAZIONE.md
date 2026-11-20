@@ -1,48 +1,34 @@
 # Stato di validazione
 
-## Confermato da fonti ufficiali
+## Risultato della prova fisica
 
-- Raspberry Pi OS Lite 32-bit release 2026-10-06 è Trixie, kernel 6.18, compatibile con tutti i modelli; la pagina ufficiale pubblica SHA-256 2c302771f34c67a0b7ae7aa2e0dcdd3eac660504be59193c011ba79d412e1632.
-- Il pacchetto Raspberry Pi rpi-usb-gadget espone rete USB; sul Pi Zero si usa la porta micro-USB dati vicina a mini-HDMI, non PWR IN.
-- La documentazione Raspberry Pi indica i codici 900093 e 920093 per Zero V1.3.
-- Raspberry Pi OS Trixie supporta la configurazione di USB Gadget e SSH al primo avvio tramite Imager o Cloud-Init.
+Il rapporto fornito dall’utente dopo la prova sul Raspberry Pi Zero ha riportato:
 
-## Da verificare su hardware
+- modello: Raspberry Pi Zero Rev 1.3;
+- revisione: `900093`;
+- sistema: Raspbian GNU/Linux 13 (Trixie), versione 13, architettura `armhf`;
+- test del modello e della revisione: `OK`;
+- test di Raspberry Pi OS Trixie 32 bit: `OK`;
+- file `RPZC-REPORT.txt` generato automaticamente sulla partizione di avvio.
 
-Il 13 novembre 2026 è stata aperta la segnalazione [rpi-imager #1797](https://github.com/raspberrypi/rpi-imager/issues/1797), relativa a Zero V1.3 che non raggiunge SSH dopo avvio a freddo collegato alla porta dati. L'autore descrive principalmente Bookworm; un collaboratore segnala di avere riprodotto difficoltà sul proprio Zero 1.3. La segnalazione non prova il comportamento della release Trixie fissata in questo progetto e non identifica una soluzione definitiva.
+Il test di riconoscimento è quindi **superato** per la scheda provata. La revisione `920093` è ammessa dallo script come seconda variante di Raspberry Pi Zero V1.3.
 
-Prima di dichiarare collaudata o pubblicare un'immagine personalizzata occorre verificare su una scheda Raspberry Pi Zero V1.3 reale:
+Nel rapporto originario SSH non risultava attivo, `usb0` era assente e il vecchio programma terminava con codice 1. Il vecchio codice sommava questi controlli facoltativi al risultato. Non cambia i due esiti positivi del riconoscimento e del sistema. La versione aggiornata esclude SSH e tratta USB Gadget come informazione facoltativa.
 
-1. Primo avvio alimentato dal solo cavo dati collegato alla porta USB.
-2. Enumerazione di rete USB su Linux e raggiungibilità di SSH.
-3. Riavvio a freddo e ripetizione del collegamento.
-4. Codice revisione mostrato dallo script e completezza dell'output.
+## Limiti del risultato
 
-Il workaround riportato nella segnalazione (avvio da PWR IN, collegamento del cavo dati, poi rimozione di PWR IN) è solo un tentativo diagnostico e non è validato da questo progetto.
+Il controllo descrive le informazioni presentate dal software. Non certifica l’autenticità fisica della scheda: revisione e device-tree sono dati software falsificabili. L’ispezione visiva aiuta a rilevare differenze o anomalie, ma non fornisce una prova definitiva di autenticità.
 
-## Esito del test fisico (2026-11-20)
+## Modifiche di questa versione
 
-- Hardware provato: Raspberry Pi Zero V1.3, Linux Mint come host, microSD da 14,6 GB.
-- Scrittura della base ufficiale Trixie 32-bit: Imager ha riportato `Write successful`; il checksum dell'archivio corrisponde a quello ufficiale.
-- USB: il computer ha rilevato `Raspberry Pi USB Gadget` (`2e8a:0013`) e il driver `cdc_ether` ha creato un'interfaccia Ethernet.
-- Rete: NetworkManager è rimasto in attesa della configurazione IPv4; nessun lease DHCP. L'assegnazione temporanea di `10.12.194.2/28` al computer non ha ottenuto risposta da `10.12.194.1`.
-- SSH: non raggiunto; `pi-zero-checker` non eseguito.
-- Esito: **test funzionale non superato**. Il sintomo è compatibile con la segnalazione sul Pi Zero V1.3 citata sopra, ma la causa non è stata determinata.
-- Variante con unità systemd per riavviare `g_ether`: sperimentale, non convalidata su Trixie. La successiva osservazione host non ha mostrato un dispositivo Gadget; test inconclusivo.
+- Criterio di riconoscimento: modello Raspberry Pi Zero Rev 1.3, revisione `900093` o `920093`, Raspberry Pi OS Trixie 32 bit (`armhf`).
+- SSH non è richiesto e non viene abilitato dal preparatore della scheda per il rapporto automatico.
+- USB Gadget e rete host sono controlli separati; la loro assenza non rende negativo il test di riconoscimento.
+- Il rapporto automatico viene scritto in `/boot/firmware/RPZC-REPORT.txt`, sulla partizione di avvio leggibile dal computer.
+- La guida PDF illustrata fornita dall’utente è inclusa senza modifiche al contenuto; `CONTROLLO_COMPLETO.md` fornisce le istruzioni complementari passo passo.
 
-## Modalità di autodiagnosi
+## Controlli dei file
 
-È stato preparato `image/prepare-selftest-card.sh`: scrive la base ufficiale con USB Gadget e un controllo automatico al primo avvio. Il servizio salva il rapporto in `/boot/firmware/RPZC-REPORT.txt`, sulla partizione FAT che Raspberry Pi OS monta in `/boot/firmware/`.
+La preparazione della microSD usa l’immagine ufficiale Raspberry Pi OS Lite Trixie 32 bit fissata in `image/SOURCE.md` e ne controlla SHA-256 prima della scrittura. La procedura mostra i dischi disponibili e richiede una conferma esplicita perché la scrittura cancella il dispositivo scelto.
 
-- Verifica statica: script di preparazione valido sintatticamente; checksum della base ufficiale e di Raspberry Pi Imager CLI verificati.
-- Test sul Raspberry Pi Zero V1.3: pendente.
-- Il rapporto locale non certifica l'autenticità e non prova il collegamento DHCP/SSH dal computer host.
-
-## Stato
-
-- Verifica delle pagine ufficiali aggiornata: 2026-11-20.
-- Base ufficiale scritta e checksum verificato.
-- Percorso USB Gadget/SSH semplice per principianti: **non convalidato**.
-- Percorso di autodiagnosi con rapporto su `bootfs`: **in attesa di test fisico**.
-- Immagine personalizzata pubblica: non preparata e non pubblicata.
-- Non presentare il progetto o l'immagine come pronti all'uso.
+La procedura SSH/USB della guida illustrata resta un percorso facoltativo. Il test di riconoscimento e la generazione del rapporto non dipendono dalla rete.

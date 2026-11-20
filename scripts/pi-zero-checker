@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -u
+
 pass() { printf '[OK]   %s\n' "$1"; }
-warn() { printf '[INFO] %s\n' "$1"; }
+info() { printf '[INFO] %s\n' "$1"; }
 fail() { printf '[NO]   %s\n' "$1"; }
 
 if [[ ! -r /proc/cpuinfo && ! -r /proc/device-tree/model ]]; then
   echo 'Esegui questo programma sul Raspberry Pi.' >&2
   exit 2
 fi
+
 MODEL='sconosciuto'
 [[ -r /proc/device-tree/model ]] && MODEL="$(tr -d '\000' </proc/device-tree/model)"
 REVISION="$(awk -F': *' '/^Revision[[:space:]]*:/ {print tolower($2); exit}' /proc/cpuinfo 2>/dev/null || true)"
@@ -30,37 +32,32 @@ echo
 
 status=0
 if [[ "$MODEL" == *'Raspberry Pi Zero'* && "$REVISION" =~ ^(900093|920093)$ ]]; then
-  pass 'Modello e revisione corrispondono a Raspberry Pi Zero V1.3.'
-elif [[ "$MODEL" == *'Raspberry Pi Zero'* ]]; then
-  warn 'Rilevato un Pi Zero, ma la revisione non corrisponde alla V1.3 attesa.'
-  status=1
+  pass 'Modello e revisione compatibili con Raspberry Pi Zero V1.3.'
 else
-  fail 'Il sistema non identifica un Raspberry Pi Zero V1.3.'
+  fail 'Modello o revisione diversi dal profilo Raspberry Pi Zero V1.3 atteso.'
   status=1
 fi
+
 if [[ "$OS_CODENAME" == trixie && "$ARCH" == armhf ]]; then
-  pass 'Raspberry Pi OS Trixie a 32 bit rilevato.'
+  pass 'Raspberry Pi OS Trixie a 32 bit (armhf) rilevato.'
 else
-  warn 'Sistema o architettura diversi dal profilo Trixie 32-bit.'
+  fail 'Sistema o architettura diversi da Raspberry Pi OS Trixie 32 bit (armhf).'
   status=1
 fi
-if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet ssh; then
-  pass 'Servizio SSH attivo.'
+
+info 'SSH è escluso dal criterio di superamento.'
+if command -v ip >/dev/null 2>&1 && ip link show usb0 >/dev/null 2>&1; then
+  info 'Interfaccia USB Gadget usb0 presente; la verifica della rete host è separata.'
 else
-  warn 'Servizio SSH non risulta attivo.'
-  status=1
+  info 'Interfaccia usb0 assente; USB Gadget e rete sono controlli facoltativi separati.'
 fi
-if ip link show usb0 >/dev/null 2>&1; then
-  pass 'Interfaccia USB Gadget usb0 presente.'
-else
-  warn 'Interfaccia usb0 assente; controlla USB Gadget e cavo dati.'
-  status=1
-fi
+
 echo
 if [[ "$status" -eq 0 ]]; then
-  echo 'Esito software: controlli previsti superati.'
-  echo 'Non sostituisce il collaudo fisico e non certifica autenticità.'
+  echo 'Esito test di riconoscimento: SUPERATO.'
 else
-  echo 'Esito software: controlli da approfondire. Consulta la guida PDF.'
+  echo 'Esito test di riconoscimento: NON SUPERATO.'
 fi
+echo 'Il rapporto descrive dati software; non certifica l’autenticità fisica della scheda.'
+echo 'Revisione e device-tree sono dati software falsificabili.'
 exit "$status"

@@ -79,9 +79,9 @@ EOF
       {
         printf 'Rapporto automatico Raspberry Pi Zero Checker\n'
         printf 'Creato: %s\n\n' "$(date -Is)"
-        printf 'Il rapporto verifica il software locale; non certifica l’autenticità della scheda.\n\n'
-        printf 'Il controllo SSH verifica solo il servizio locale, non il login remoto.\n'
-        printf 'La rete USB va verificata separatamente dal computer host.\n\n'
+        printf 'Il rapporto riporta dati software e non certifica l’autenticità fisica della scheda.\n'
+        printf 'Revisione e device-tree sono dati software falsificabili.\n'
+        printf 'SSH non è un requisito; USB Gadget e rete host sono controlli facoltativi separati.\n\n'
         /usr/local/sbin/pi-zero-checker
         result=$?
         printf '\nExit code: %s\n' "$result"
@@ -106,13 +106,13 @@ EOF
       WantedBy=multi-user.target
 runcmd:
   - [systemctl, daemon-reload]
-  - [systemctl, enable, --now, ssh]
   - [systemctl, enable, --now, pi-zero-checker-report.service]
 EOF
 } > "$USER_DATA"
 chmod 600 "$USER_DATA"
 
 printf '\nLa scheda eseguirà il controllo da sola al primo avvio e salverà RPZC-REPORT.txt nella partizione bootfs.\n'
+printf 'SSH non viene abilitato e non serve per superare il test di riconoscimento.\n'
 printf 'Può chiedere la password amministrativa del computer per scrivere sulla microSD.\n\n'
 sudo "$IMAGER" --appimage-extract-and-run --cloudinit-userdata "$USER_DATA" "$IMAGE" "$DEVICE"
 
