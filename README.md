@@ -1,6 +1,6 @@
 # Raspberry Pi Zero Checker
 
-> Stato: prototipo software/documentale. Non ancora provato su un Raspberry Pi Zero V1.3 fisico.
+> Stato: il collaudo fisico su Raspberry Pi Zero V1.3 del 20 novembre 2026 non ha completato SSH. Il progetto non è pronto per l'uso da parte di principianti.
 
 Procedura italiana per controllare modello, sistema operativo e collegamento USB di un Raspberry Pi Zero V1.3 usando Linux, senza monitor, tastiera o Wi-Fi.
 
@@ -29,7 +29,7 @@ L'indirizzo 10.12.194.1 è quello predefinito del pacchetto ufficiale quando il 
 
 ### Nota sul primo avvio
 
-Il 13 novembre 2026 è stata aperta una segnalazione per il Pi Zero V1.3: l'autore riferisce che il gadget USB può non essere raggiungibile all'avvio; un collaboratore ha confermato un problema simile sul proprio Zero 1.3. La segnalazione descrive test soprattutto con Bookworm e non stabilisce l'esito sulla release Trixie fissata qui. Il test fisico resta quindi necessario. Se il collegamento USB non parte, la segnalazione indica come workaround da provare: avviare prima con alimentazione su PWR IN, collegare poi il cavo dati alla porta USB e infine scollegare PWR IN. È un suggerimento non verificato da questo progetto.
+Nel test fisico con Trixie, il computer ha rilevato il dispositivo USB Gadget e creato un'interfaccia Ethernet, ma non ha ricevuto un indirizzo IPv4 dal Pi. SSH non è stato raggiunto e il programma di controllo non è stato eseguito. Il risultato è compatibile con la segnalazione [rpi-imager #1797](https://github.com/raspberrypi/rpi-imager/issues/1797), che riporta problemi analoghi sul Pi Zero V1.3. La segnalazione descrive prove soprattutto con Bookworm e non dimostra la causa sulla release Trixie usata qui.
 
 ## Controlli e limiti
 
@@ -41,7 +41,7 @@ Il risultato controlla dati esposti dal software. Non certifica autenticità, in
 
 `image/SOURCE.md` fissa la release ufficiale Lite Trixie 32-bit del 6 ottobre 2026 e il suo SHA-256 (anche in `image/SHA256SUMS`). Lo script image scarica e verifica l'archivio originale; non scrive su SD. Utente, password, SSH e USB Gadget sono impostazioni personali dell'Imager per evitare credenziali predefinite in un'immagine pubblica.
 
-L'immagine personalizzata del progetto non è inclusa: il collaudo su un Raspberry Pi Zero V1.3 fisico è **pendente**. Documentazione ufficiale controllata il 20 novembre 2026.
+L'immagine personalizzata del progetto non è inclusa. La base ufficiale è stata scritta su microSD e verificata, ma il collaudo funzionale è **non superato**: manca la connessione IPv4/SSH. Una variante con riavvio automatico del modulo USB resta sperimentale e non è convalidata su Trixie. Non distribuire un'immagine del progetto come pronta all'uso finché il percorso semplice non supera il test su hardware reale. Documentazione controllata il 20 novembre 2026.
 
 ## Riferimenti
 
