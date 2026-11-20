@@ -35,8 +35,7 @@ printf 'Checksum verificati.\n\n'
 printf 'Dischi rilevati:\n'
 lsblk -e7 -o NAME,SIZE,MODEL,TRAN,RM,TYPE,MOUNTPOINTS
 printf '\n'
-read -r -p 'Dispositivo microSD da usare [/dev/mmcblk0]: ' DEVICE
-DEVICE="${DEVICE:-/dev/mmcblk0}"
+DEVICE="${1:-/dev/mmcblk0}"
 [[ "$DEVICE" == /dev/* && -b "$DEVICE" ]] || fail "non è un dispositivo disco valido: $DEVICE"
 [[ "$(lsblk -dnro TYPE "$DEVICE")" == disk ]] || fail 'seleziona il disco intero, non una partizione.'
 
@@ -47,7 +46,8 @@ fi
 
 printf '\nDispositivo selezionato:\n'
 lsblk -o NAME,SIZE,MODEL,TRAN,RM,TYPE,MOUNTPOINTS "$DEVICE"
-printf '\nLa scrittura cancellerà tutto il contenuto del dispositivo selezionato.\n'
+printf '\nControlla che il disco selezionato sia la microSD da 14,6 GB.\n'
+printf 'La scrittura cancellerà tutto il suo contenuto.\n'
 read -r -p "Per continuare digita SCRIVI $DEVICE: " CONFIRM
 [[ "$CONFIRM" == "SCRIVI $DEVICE" ]] || fail 'scrittura annullata.'
 
