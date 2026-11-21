@@ -29,4 +29,4 @@ Il rapporto fornito per la scheda provata ha identificato Raspberry Pi Zero Rev 
 
 Il workflow in `.github/workflows/publish-image.yml` costruisce e pubblica l’immagine pronta nelle Releases. `image/build-ready-image.sh` prepara il file partendo dalla base ufficiale con checksum verificato. `image/prepare-selftest-card.sh` resta un metodo alternativo per scrivere direttamente una microSD da Linux.
 
-La guida PDF illustrata fornita dall’utente è conservata senza modifiche in `docs/guida-italiana.pdf`.
+Nella guida PDF, le pagine 1–5 con fotografie e controlli visivi sono rimaste invariate. Le pagine 6–7 sono state aggiornate alla procedura con l’immagine pronta scaricata da GitHub; SSH non è richiesto.
